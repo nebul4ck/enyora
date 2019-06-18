@@ -12,55 +12,80 @@
 """
 
 
+import ast
+
+from enyora.conf.settings import baseConf
+from enyora.conf.sql_querys import *
+from enyora.lib.sql import sqlAction
+from enyora.lib.actions import registryAction
 
 
-from registry.conf.settings import Conf
+class Base(object):
+	"""Base class."""
+	def __init__(self):
+		self.name=self.__class__.__name__
+		self.sql_latest_row=SQL_LATEST_ROW
 
-def Base():
+		loadConf=baseConf()
+		config=loadConf.Conf()
 
-    ''' ensure en_registry database exists '''
-    create_database(enyora_db)
+		self.enyora_db=ast.literal_eval(config['database']
+			['enyora_db'])
+		self.enyora_table=ast.literal_eval(config['database']
+			['enyora_table'])
 
-    ''' ensure enyora table exists '''
-    create_table(enyora_db, enyora_table, sql_enyora_table)
+	def run(self, action):
 
-    ''' return inputs menu values '''
-    data_menu = run_menu()
-    datime = data_menu['date']
-    date = datime['date']
-    time = datime['time']
-    action = data_menu['action']
+		''' Initialize SQL Actions '''
+		sql=sqlAction()
 
-    ''' insert new input '''
-    
+		check_sql_config=sql.check_config(self.enyora_db, 
+			self.enyora_table)
 
-    ''' compare action '''
-    try:
-        status_action = test_action(table_name, db_file, date, action)
-        # sacar variables de aqui ya que es la última row, por ejemplo la fecha,
-        # la hora, y la work diference
-    except Exception as e:
-        print('Se haa habido un error')
+		if not check_sql_config:
+			print('Exiting with erros...')
+			exit(1)
 
-    if status_action:
-        print('No es posible realizar dos acciones iguales de forma \
-                consecutiva.')
-    elif status_action == None:
-        print('añadimos un registro nuevo')
-        insert_row(db_file, table_name, date, time, 
-                action, '', '')
-    else:
-        # 1. como tenemos la hora de la ultima row, hacer la diferencia entre la nueva y la anterior
-        # 2. PODEMOS QUITAR EL WORK TOTAL Y HACER UNA CONSULTA ONFLY CADA VEZ QUE QUERAMOS LAS HORAS TOTALES DE UN DIA
-        # ESTO SE PUEDE HACER SUMANDO TODAS LAS DIFF PARA NA FECHA DADA.
-        # TAMBIEN PUEDO METER UNA SUMA DE TODAS LAS DIFERENCIAS HASTA EL MOMENTO E IR ALMACENANDOLA EN EL CAMPO TOTAL
-        # Y CADA VEZ QUE QUIERA PERGUNTAR POR EL TOTAL IRME A LA ULTIMA ROW DE ESE DIA
-        print('son diferente, diff + total + insert')
-        calc_diff_total = calc_work()
+		''' Initialize Registry Actions '''
+		registry_action=registryAction()
 
-if __name__ == '__main__':
-    main()
+		''' Set current values '''
+		date_time=registry_action.set_date_time()
 
+		# Current values
+		cur_date=date_time['date']
+		cur_time=date_time['time']
+		cur_action='in'
 
-enyora_config = Base()
-print(ast.literal_eval(enyora_config['database']['enyora_db']))
+		# Default register values
+		reg_date=''
+		reg_time=''
+		reg_action=''
+		worked=''
+
+		# Request the latest inserted row
+		data_request=sql.request_row(self.enyora_db, self.enyora_table, 
+			self.sql_latest_row)
+
+		# Are registry date and current date the same?
+		#	request: [(rowid, r_date, r_time, r_action, r_worked, r_incident, r_holidays)]
+		try:
+			reg_date=data_request[0][1]
+			reg_time=data_request[0][2]
+			reg_action=data_request[0][3]
+		except IndexError:
+			print('Recording the first reg into table...')
+		except Exception as e:
+			print(e)
+			exit(1)
+
+		if reg_date==cur_date:
+			if reg_action==cur_action:
+				cur_action='out'
+				worked=registry_action.calc_work(reg_time, cur_time)
+
+			print('Horas trabajadas: %s' % worked)
+
+		# Insert values
+		sql.insert_row(self.enyora_db, self.enyora_table, cur_date, 
+			cur_time, cur_action, worked)

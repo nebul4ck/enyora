@@ -36,21 +36,31 @@ else
 fi
 
 # Sync source code with package folder
+echo "Sync source code with package folder..."
 rsync -av --delete -r --exclude '*pyc' ${BASE}/src/${SATINIZE_REPO}/* \
 	./${SATINIZE_REPO}/usr/lib/python${PYTHON_VERSION}/dist-packages/${SATINIZE_REPO}/
 
 # Copy configuration file
+echo "Copy configuration file..."
 cp ${BASE}/src/${SATINIZE_REPO}.conf-prod \
 	./${SATINIZE_REPO}/etc/${SATINIZE_REPO}/${SATINIZE_REPO}.conf && \
-	echo "${SATINIZE_REPO}.conf-prod file sent"
+	echo "OK - ${SATINIZE_REPO}.conf-prod file sent"
 
 # Copy executable file to system folder
+echo "Copy executable file to system folder..."
 cp ${BASE}/src/${SATINIZE_REPO}.py \
 	./${SATINIZE_REPO}/usr/bin/${SATINIZE_REPO} && \
-	echo "${SATINIZE_REPO.py} main prog file sent"
+	echo "OK - ${SATINIZE_REPO}.py main prog file sent"
 
 # Add executable permissions to executable file
+echo "Add executable permissions to executable file..."
 chmod +x ./${SATINIZE_REPO}/usr/bin/${SATINIZE_REPO} && \
-	echo "attr changed!"
+	echo "OK - attr changed!"
+
+# Make DEBIAN package
+VERSION=$(grep Version: VERSION | awk '{printf $2}')
+echo "Building DEBIAN pkg..."
+dpkg -b ./${SATINIZE_REPO} ${SATINIZE_REPO}-${VERSION}.deb && \
+	echo "OK - Built package"
 
 exit 0

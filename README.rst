@@ -3,14 +3,28 @@ Enyora Registry
 
 Record the time of entry and exit in the office. Calculate the hours worked daily, weekly and monthly.
 
+
+Make package
+************
+
+In order to make a new DEBIAN package (enyora-x.y.z.deb) after to re-factor the src/ code, you must run make-package script.
+
+.. code:: console
+
+  $ ./make-package.sh 3.5 local enyora
+
+  3.5: python_version
+  local: make_mode
+  enyora: repository name
+..
+
 Install
 *******
 
 .. code:: console
 
-  $ git clone https://github.com/nebul4ck/rhea-credentials-manager-client.git
-  $ apt install ./enyora/enyora-0.0.1.deb
-
+  $ git clone https://github.com/nebul4ck/enyora.git
+  $ apt install ./enyora-0.0.1.deb
 ..
 
 

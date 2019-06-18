@@ -14,9 +14,10 @@
 
 import argparse
 import sys
+import traceback
+import ast
 
-from enyora.lib.base import Base
-
+from registry.lib.base import Base
 
 def main():
 	''' Main function. '''
@@ -30,11 +31,12 @@ def main():
 		'-a',
 		'--action',
 		action='store',
-		choices=['auto',
+		choices=['in',
+			'out',
 			'day',
 			'week',
 			'month'],
-		help='auto to record entry or exit time.\
+		help='in|out to record entry or exit time.\
 			unit time to show about worked hours.')
 
 	if len(sys.argv)==1:

@@ -14,22 +14,26 @@
 import configparser
 import os,sys
 
-# Parse config file
-CONFIG_FILE = '/etc/enyora/enyora.conf'
-DEV_CONFIG_FILE = './enyora.conf'
 
-def Conf():
+class baseConf(object):
+	"""baseConf class"""
+	def __init__(self):
+		self.name=self.__class__.__name__
+		self.config_file='/etc/enyora/enyora.conf'
+		self.dev_config_file='./enyora.conf-dev'
 
-	config = configparser.ConfigParser()
+	def Conf(self):
 
-	if os.path.isfile(CONFIG_FILE):
-		print('INFO - Loading %s file' % CONFIG_FILE)
-		config.read([CONFIG_FILE])
-	elif os.path.isfile(DEV_CONFIG_FILE):
-		print('INFO - Loading %s file' % DEV_CONFIG_FILE)
-		config.read([DEV_CONFIG_FILE])
-	else:
-		print('ERROR - Config file not found.')
-		sys.exit(1)
+		config = configparser.ConfigParser()
 
-	return config
+		if os.path.isfile(self.config_file):
+			print('INFO - Loading %s file' % self.config_file)
+			config.read([self.config_file])
+		elif os.path.isfile(self.dev_config_file):
+			print('INFO - Loading %s file' % self.dev_config_file)
+			config.read([self.dev_config_file])
+		else:
+			print('ERROR - Config file not found.')
+			sys.exit(1)
+
+		return config
