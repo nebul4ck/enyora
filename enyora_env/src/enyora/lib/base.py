@@ -15,77 +15,114 @@
 import ast
 
 from enyora.conf.settings import baseConf
-from enyora.conf.sql_querys import *
-from enyora.lib.sql import sqlAction
 from enyora.lib.actions import registryAction
-
 
 class Base(object):
 	"""Base class."""
 	def __init__(self):
 		self.name=self.__class__.__name__
-		self.sql_latest_row=SQL_LATEST_ROW
 
+		''' Loading config parameters '''
 		loadConf=baseConf()
 		config=loadConf.Conf()
 
-		self.enyora_db=ast.literal_eval(config['database']
+		''' Set config parameters '''
+		#self.sql_select_all=SQL_SELECT_ALL
+		self.database=ast.literal_eval(config['database']
 			['enyora_db'])
-		self.enyora_table=ast.literal_eval(config['database']
+		self.table=ast.literal_eval(config['database']
 			['enyora_table'])
+		# self.reg_date=ast.literal_eval(config['default_values']
+		# 	['reg_date'])
+		# self.reg_time=ast.literal_eval(config['default_values']
+		# 	['reg_time'])
+		# self.default_action=ast.literal_eval(config['default_values']
+		# 	['action'])
+		# self.default_worked_time=ast.literal_eval(config['default_values']
+		# 	['worked_time'])
+		# self.default_day_off_work=ast.literal_eval(config['default_values']
+		# 	['day_off_work'])
 
 	def run(self, action):
 
-		''' Initialize SQL Actions '''
-		sql=sqlAction()
+		if action=='in' or action=='out':
+			''' Insert new record '''
 
-		check_sql_config=sql.check_config(self.enyora_db, 
-			self.enyora_table)
+			# Initialize Registry Actions Class
+			registry_action=registryAction()
 
-		if not check_sql_config:
-			print('Exiting with erros...')
-			exit(1)
+			json_data=registry_action.clocking(self.database, self.table, action)
 
-		''' Initialize Registry Actions '''
-		registry_action=registryAction()
+		elif action=='import':
+			''' Import from Excel '''
+			#TODO
+		elif action=='export':
+			'''Export to Excel '''
+		else:
+			''' Show worked hours '''
+			#TODO:
+				#DAY
+				#WEEK
+				#MONTH
 
-		''' Set current values '''
-		date_time=registry_action.set_date_time()
+		# # Initialize Events Class
+		# incident=Events()
 
-		# Current values
-		cur_date=date_time['date']
-		cur_time=date_time['time']
-		cur_action='in'
 
-		# Default register values
-		reg_date=''
-		reg_time=''
-		reg_action=''
-		worked=''
+		# ''' Ensure database and table exists Stage '''
+		# try:
+		# 	check_sql_config=sql.check_config(self.enyora_db, 
+		# 		self.enyora_table)
+		# except Exception as e:
+		# 	print('[error] - %s' % e)
+		# 	print('[error] - Database and/or table could not be created')
+		# 	print('... exiting with errors')
+		# 	exit(1)				
 
-		# Request the latest inserted row
-		data_request=sql.request_row(self.enyora_db, self.enyora_table, 
-			self.sql_latest_row)
 
-		# Are registry date and current date the same?
-		#	request: [(rowid, r_date, r_time, r_action, r_worked, r_incident, r_holidays)]
-		try:
-			reg_date=data_request[0][1]
-			reg_time=data_request[0][2]
-			reg_action=data_request[0][3]
-		except IndexError:
-			print('Recording the first reg into table...')
-		except Exception as e:
-			print(e)
-			exit(1)
+		# ''' Check the latest record Stage '''
 
-		if reg_date==cur_date:
-			if reg_action==cur_action:
-				cur_action='out'
-				worked=registry_action.calc_work(reg_time, cur_time)
+		# # Request
+		# data_request=sql.request_row(self.enyora_db, self.enyora_table, 
+		# 	self.sql_latest_row)
 
-			print('Horas trabajadas: %s' % worked)
+		# # Format JSON data
+		# json_list=registry_action.format_data(data_request)
 
-		# Insert values
-		sql.insert_row(self.enyora_db, self.enyora_table, cur_date, 
-			cur_time, cur_action, worked)
+
+		# ''' Set current date/time Stage '''
+		# date_time=registry_action.set_date_time()
+		# cur_date=date_time['date']
+		# cur_time=date_time['time']
+
+
+
+
+		# # Is the same date?
+		# if req_date==cur_date:
+		# 	# then the action could not be the same
+		# 	cur_action=registry_action.test_action(req_action)
+
+		# 	#set_action=incident.another_rec()
+
+		# print(latest_row)
+		# exit(0)
+		# #if 
+		# try:
+		# 	reg_date=json_data_req[0][1]
+		# 	reg_time=data_request[0][2]
+		# 	reg_action=data_request[0][3]
+		# except IndexError:
+		# 	no_worked=True
+		# 	print('')
+		# except Exception as e:
+		# 	print(e)
+		# 	exit(1)
+
+		# if reg_date==cur_date:
+		# 	if reg_action==cur_action:
+		# 		cur_action='out'
+		# 		worked_time=registry_action.calc_work(reg_time, cur_time)
+
+		# 	print('Horas trabajadas: %s' % worked)
+

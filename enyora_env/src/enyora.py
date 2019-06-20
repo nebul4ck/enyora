@@ -30,10 +30,13 @@ def main():
 		'-a',
 		'--action',
 		action='store',
-		choices=['auto',
+		choices=['in',
+			'out',
 			'day',
 			'week',
 			'month'],
+		required=True,
+		dest='action',
 		help='auto to record entry or exit time.\
 			unit time to show about worked hours.')
 

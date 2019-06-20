@@ -27,13 +27,13 @@ class baseConf(object):
 		config = configparser.ConfigParser()
 
 		if os.path.isfile(self.config_file):
-			print('INFO - Loading %s file' % self.config_file)
+			print('[info] - Loading %s file' % self.config_file)
 			config.read([self.config_file])
 		elif os.path.isfile(self.dev_config_file):
-			print('INFO - Loading %s file' % self.dev_config_file)
+			print('[info] - Loading %s file' % self.dev_config_file)
 			config.read([self.dev_config_file])
 		else:
-			print('ERROR - Config file not found.')
+			print('[error] - Config file not found.')
 			sys.exit(1)
 
 		return config
