@@ -11,186 +11,195 @@
    :Version : 0.0.1
 """
 
-import json
+import ast
 
-from datetime import datetime
+from datetime import datetime, timedelta
 from enyora.lib.sql import sqlAction
 from enyora.conf.sql_querys import *
 
 class registryAction(object):
     """Registry class"""
-    def __init__(self):
+    def __init__(self, config):
         self.name=self.__class__.__name__
-        self.select_latest_row=SQL_LATEST_ROW
-        self.json_dim=JSON_DIMENSION
+
+        self.config=config
+        self.database=ast.literal_eval(config['database']
+            ['enyora_db'])
+        self.table=ast.literal_eval(config['database']
+            ['enyora_table'])
+        self.sql=sqlAction(self.config)
+
+        self.sql_date_select=SQL_DATE_SELECT
+        self.select_last_action=SQL_LAST_ACTION
+
+    def check_config(self):
+        ''' Database orchestration '''
+        self.sql.database_orch()
 
     def set_date_time(self):
         ''' Set current date '''
 
-        date_time = {}
+        date_time={}
         
         date = datetime.today().strftime('%Y-%m-%d')
-        time = datetime.now().strftime('%H:%M')
+        time = datetime.now().strftime('%H:%M:%S')
 
-        date_time = { 'date': date, 'time': time }
+        date_time={'date': date,'time': time}
 
         return date_time
 
-    def calc_work(self, start_time, finish_time):
+    def calc_work(self, last_action, start_time, 
+        finish_time):
         ''' set diff time '''
 
-        time_format = "%H:%M"
+        time_format="%H:%M:%S"
+        diff=''
 
-        parse_start_hour = datetime.strptime(start_time, time_format)
-        parse_finish_hour = datetime.strptime(finish_time, time_format)
+        if last_action=='in':
+            parse_start_hour=datetime.strptime(start_time, time_format)
+            parse_finish_hour=datetime.strptime(finish_time, time_format)
 
-        diff = parse_finish_hour - parse_start_hour
+            diff=parse_finish_hour - parse_start_hour
 
         return diff
 
-    def format_data(self, data):
-        ''' from tuple to json '''
+    def show_menu(self, last_day, last_time, last_action):
+        ''' Launch the menu to force data insertion '''
 
-
-        self.json_dim['rowid']=data[0]
-        self.json_dim['date']=data[1]
-        self.json_dim['time']=data[2]
-        self.json_dim['action']=data[3]
-        self.json_dim['worked_time']=data[4]
-        self.json_dim['day_off_work']=data[5]
-
-        return self.json_dim
-
-    def test_action(self, req_date, req_action):
-        ''' ensure the latest recorded action and the current
-            action are not the same '''
-
-        recorded_action=req_action
-
-        if recorded_action=='in':
-            current_action='out'
+        if last_action=='in':
+            req_action='out'
         else:
-            current_action='in'
+            req_action='in'
 
-        set_answer=str(input('\nThe latest recorded action is %s. The\
-            current action must be %s. Is it true? (y/n)' & (recorded_action, 
-                current_action)))
+        time_format="%H:%M:%S"
+        parse_time=datetime.strptime(last_time, time_format)
+        opt_time=parse_time + timedelta(hours=2)
+        parse_opt_time=datetime.strftime(opt_time, time_format)
 
-        if set_answer=='n':
-            print('There was an incident, you must mark the last check')
-            old_mark=str(input('\nSet the time for the last check %s (%s). ie. 18:00'))
+        print('\n # Fix broken entry point #')
+        print(' Latest entry-point recorded:\n')
+        print('  | Date: %s' % last_day)
+        print('  | Time: %s' % last_time)
+        print('  | Action: clock-%s' % last_action)
+        print('\n The clock-%s action is required for day %s' % 
+            (req_action, last_day))
+        new_day=str(input('\n  Date [%s]: ' % last_day))
+        new_time=str(input('  Time [%s]: ' % parse_opt_time))
+        new_action=str(input('  Action [%s]: ' % req_action))
 
-        stderr = False
+        # TODO: Check if the entering values are format correct.
+        if new_day=='':
+            new_day=last_day
 
-        try:
-            data_conn = open_connect(db_file)
-            conn_db = data_conn['conn']
-            cur = data_conn['cursor']
+        if new_time=='':
+            new_time=parse_opt_time
 
-            req = req_last_row % (table_name, date)
-            last_row = cur.execute(req)
-            raw_row = last_row.fetchone()
-            last_action = raw_row[1]
+        if new_action=='':
+            new_action=req_action
 
+        date_is_valid=self.check_datetime(new_day, new_time)
 
-            if last_action == action:
-                stderr = True
+        if date_is_valid:
 
-        except TypeError as e:
-            print('Welcome!, gl&hf :D')
-            stderr = None
-        except Exception as e:
-            print(e)
-            raise
-        finally:
-            conn_db.close()
+            worked_time=self.calc_work(last_action, last_time, 
+                new_time)
 
-        return stderr
+            self.sql.insert_record(new_day, new_time, new_action, 
+                worked_time, day_off_work=0)
 
-    def clocking(self, database, table, action):
+    def last_day_recorded(self):
+        ''' Return the last day recorded in enyora registry table '''
+
+        last_info={'date': None, 'time': None}
+
+        statement=self.sql_date_select % self.table
+        data_request=self.sql.request_row(statement)
+
+        if data_request:
+            latest_row=data_request[0]
+            last_day=latest_row[0]
+            last_time=latest_row[1]
+
+            last_info={'date': last_day,
+                'time': last_time}
+
+        return last_info
+
+    def check_datetime(self, date, time):
+        ''' Return if current datetime is valid '''
+
+        date_time_format='%Y-%m-%d %H:%M:%S'
+        date_time='%s %s' % (date, time)
+
+        parse_datetime=datetime.strptime(date_time, 
+            date_time_format)
+
+        if parse_datetime > datetime.now():
+            print('Current time cannot to be future.')
+            exit(1)
+        else:
+            is_valid=True
+
+        return is_valid
+
+    def check_action(self, day, action):
+        ''' Return if the current action and last action
+            are the same '''
+
+        actions={'curr_action': action,
+            'last_action': None,
+            'are_same': False}
+        
+        statement=self.select_last_action % (self.table, day)
+        last_action=self.sql.request_row(statement)[0][0]
+
+        actions['last_action']=last_action
+
+        if actions['curr_action']==last_action:
+            actions['are_same']=True
+
+        return actions
+
+    def clocking(self, action):
 
             ''' Set current datetime '''
             date_time=self.set_date_time()
             current_date=date_time['date']
             current_time=date_time['time']
 
-            sql=sqlAction()
-            # Insert values
-            sql.insert_record(database, table, current_date, current_time,
-                action, '', 0)
-
-            # Adding a new record
-
-            # Get the latest record in JSON format
-            latest_day_record=data_request[0]
-            latest_record_json=self.format_data(latest_day_record)
-            # requested values
-            latest_date=latest_record_json['date']
-            latest_time=latest_record_json['time']
-            latest_action=latest_record_json['action']
-            return latest_record_json
-
-    # def get_rows(self):
-
-    #     file = open('./dates.db','r')
-    #     lines = file.readlines()
-
-    #     entrance = lines[0].split('|')[1]
-    #     leave = lines[-1].split('|')[1]
-
-    #     times = {'start': entrance, 'leave': leave}
-
-    #     return times
-
-    # def insert_file_row(self, date, time):
-    #     ''' Access to database and fill the row '''
-
-    #     file = open('./dates.db','a')
-    #     file.write('%s|%s\n' % (date,time))
-    #     file.close
+            last_date_info=self.last_day_recorded()
+            last_day=last_date_info['date']
+            last_time=last_date_info['time']
+            
 
 
+            date_is_valid=self.check_datetime(current_date, current_time)
 
-    # def run_menu(self):
-    #     ''' exec program '''
+            if date_is_valid:
 
-    #     sel = int(input('\nSelect option:\n\t(1) Check-in\
-    #                             \n\t(2) Check-out\n'))
+                if not last_day:
 
-    #     if sel == 1:
-    #         print('-- Check in --')
-    #         action = 'checkin'
-    #         datime = self.set_date_time()
+                    worked_time=''
 
-    #         data = {
-    #                 'action': action,
-    #                 'date': datime 
-    #             }
-    #     elif sel == 2:
-    #         print ('-- Check out --')
-    #         action = 'checkout'
-    #         datime = self.set_date_time()
+                    print('[info] - Recording the first one entry point to office...')
+                    self.sql.insert_record(current_date, current_time, action, 
+                        worked_time, 0, initialize=True)
 
-    #         data = {
-    #                 'action': action,
-    #                 'date': datime 
-    #             }
-    #     else:
-    #         print('err: option not found.')
-    #         exit(1)
+                actions=self.check_action(last_day, action)
+                last_action=actions['last_action']
 
-    #     return data
+                if actions['are_same']:
+                    print('[warning] - the current action Clock-(%s) and the last action Clock-(%s) cannot the same.' % 
+                        (action, last_action))
+                    print('[info] - please, fix the problem:')
+                    print('Launching MENU...')
+                    self.show_menu(last_day, last_time, last_action)
 
+                # If actions are not the same, and current action 
+                #is out, calc time worked
+                worked_time=self.calc_work(last_action, last_time, 
+                    current_time)
 
-    # fill_row = insert_row(date,time)
-
-    # ##
-
-    # time_json = get_rows()
-    # start_hour = time_json['start'].strip()
-    # finish_hour = time_json['leave'].strip()
-    
-    # diff = time_diference(start_hour, finish_hour)
-
-    # print('La diferencia entre la entrada y la salida es: %s' % diff)
-
+                self.sql.insert_record(current_date, current_time, action, 
+                    worked_time, day_off_work=0)
+                exit(0)

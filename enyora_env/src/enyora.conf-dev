@@ -2,19 +2,3 @@
 enyora_db='./db/testdb2.db'
 enyora_table='enyora_registry'
 
-[default_values]
-# Default date/time
-reg_date='01-01-1970'
-reg_time='08:00'
-#
-# Default current and register action (check in)
-action='in'
-#
-# Number worked hours (per day)
-worked_time=''
-#
-# Is today a day off work by default?
-#   0 = False
-#   1 = True
-day_off_work=0
-

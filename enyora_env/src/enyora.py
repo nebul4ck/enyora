@@ -31,10 +31,7 @@ def main():
 		'--action',
 		action='store',
 		choices=['in',
-			'out',
-			'day',
-			'week',
-			'month'],
+			'out'],
 		required=True,
 		dest='action',
 		help='auto to record entry or exit time.\
