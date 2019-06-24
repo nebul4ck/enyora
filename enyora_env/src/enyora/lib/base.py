@@ -15,6 +15,7 @@
 import ast
 
 from enyora.conf.settings import baseConf
+from enyora.conf.cod_messages import cod_10
 from enyora.lib.actions import registryAction
 
 class Base(object):
@@ -39,6 +40,6 @@ class Base(object):
 			''' Insert new record '''
 			json_data=self.registry_action.clocking(action)
 		else:
-			print('Action not found!')
+			print(cod_10)
 			exit(1)
 

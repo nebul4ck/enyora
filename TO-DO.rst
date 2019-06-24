@@ -18,8 +18,6 @@ TO-DO
   enyora --show day
 ..
 
-3. Group in all error messages into a sheet
-
 4. Multi-tenant
 
 5. Multi-user
@@ -41,3 +39,5 @@ Worked hours, work schedule, holidays, taking a sick leave and more
 10. logger?
 
 11. Show menu needs a method that check if the values inserting are a correct format
+
+13. argsparte does not check if the arg is -a -an -asdddsd --action --atusas, etc.. (only -a or --action is permit)

@@ -17,6 +17,7 @@ import os.path as path
 
 from datetime import datetime, timedelta
 from enyora.conf.sql_querys import *
+from enyora.conf.cod_messages import 
 
 class sqlAction(object):
 	"""baseConf class"""
@@ -39,10 +40,8 @@ class sqlAction(object):
 			conn_db = sqlite3.connect(self.database)
 			cur = conn_db.cursor()
 
-			data_conn = {
-							'conn': conn_db,
-							'cursor': cur
-						}
+			data_conn = {'conn': conn_db, 
+				'cursor': cur}
 		except Exception as e:
 			print(e)
 
@@ -58,6 +57,7 @@ class sqlAction(object):
 				data_conn=self.open_connect()
 				conn_db=data_conn['conn']
 				db_exist=True
+				print(cod_30 % self.database)
 			except Exception as e:
 				print(e)
 				db_exist=False
@@ -84,7 +84,7 @@ class sqlAction(object):
 		''' ensure database_registry and table exists '''
 		
 		stdout_check_config=True
-		
+
 		try:
 			db_exist=self.create_database()
 			if db_exist:
@@ -105,30 +105,25 @@ class sqlAction(object):
 
 		return raw_request
 
-	def insert_record(self, date, time, action, worked_time, 
-		day_off_work, initialize=False):
-		''' Force the insert the first one record '''
+	def insert_record(self, date, action, worked):
+		'''Insert a new record into database '''
+
 		data_conn = self.open_connect()
 		conn_db = data_conn['conn']
 		cur = data_conn['cursor']
 
-		statement=self.sql_query_in % (self.table, date, time, 
-			action, worked_time, day_off_work)
-
-		if initialize:
-			print('Using \'clock-in\' for the first record by default.')
-			action='in'
+		statement=self.sql_query_in % (self.table, date, 
+			action, worked)
 
 		if conn_db is not None:
 			try:
 				cur.execute(statement)
-				print('[info] - Recorded new Clock-%s' % action)
+				print(cod_31 % action)
 				conn_db.commit()
 				conn_db.close()
-				exit(0)
 			except Exception as e:
 				print(e)
 				exit(1)
 		else:
-			print('[error] - Reached problem during database connection')
+			print(cod_32)
 			exit(1)

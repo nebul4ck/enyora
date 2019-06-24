@@ -16,6 +16,7 @@ import argparse
 import sys
 
 from enyora.lib.base import Base
+from enyora.conf.cod_messages import cod_01
 
 
 def main():
@@ -34,8 +35,7 @@ def main():
 			'out'],
 		required=True,
 		dest='action',
-		help='auto to record entry or exit time.\
-			unit time to show about worked hours.')
+		help=cod_01)
 
 	if len(sys.argv)==1:
 	     parser.print_help(sys.stderr)
