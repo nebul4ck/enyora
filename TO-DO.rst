@@ -41,3 +41,9 @@ Worked hours, work schedule, holidays, taking a sick leave and more
 11. Show menu needs a method that check if the values inserting are a correct format
 
 13. argsparte does not check if the arg is -a -an -asdddsd --action --atusas, etc.. (only -a or --action is permit)
+
+14. sqlite> SELECT * FROM enyora_registry WHERE r_date LIKE '%2019-06-25%';
+14|2019-06-25 00:16:38|out|2:00:00
+15|2019-06-25 18:40:59|in|
+
+15. Hacer que todo termine en base.py e imprimirlo desde ahí

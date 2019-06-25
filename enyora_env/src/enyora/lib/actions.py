@@ -16,7 +16,7 @@ import ast
 from datetime import datetime, timedelta
 from enyora.lib.sql import sqlAction
 from enyora.conf.sql_querys import *
-from enyora.conf.cod_messages import cod_20, cod_21, 
+from enyora.conf.cod_messages import cod_20, cod_21, \
     cod_22, cod_23, cod_24
 
 class registryAction(object):
@@ -33,6 +33,7 @@ class registryAction(object):
 
         self.sql_date_select=SQL_DATE_SELECT
         self.select_last_action=SQL_LAST_ACTION
+        self.sql_worked=SQL_WORKED
 
     def check_config(self):
         ''' Database orchestration '''
@@ -55,7 +56,7 @@ class registryAction(object):
             parse_last_date=datetime.strptime(last_date, date_for)
             parse_curr_date=datetime.strptime(curr_date, date_for)
             worked=parse_curr_date - parse_last_date
-
+            
         return worked
 
     def show_menu(self, last_date, last_action):
@@ -101,7 +102,7 @@ class registryAction(object):
         ''' Return the last day recorded in enyora registry table '''
 
         statement=self.sql_date_select % self.table
-        
+
         # Si no hay nada devuelve: []
         # Si si hay devuelve esto: [('2019-06-24 21:41:03',)]
         last_date=self.sql.request_row(statement)
@@ -146,6 +147,50 @@ class registryAction(object):
                 self.show_menu(date, last_action)
 
         return action
+
+    def show_worked_hours(self, from_ago):
+        ''' Request worked hours for from_ago '''
+
+        list_sum=[]
+
+        day='%d'
+        month='%m'
+        year='%Y'
+
+        day=datetime.now().strftime(day)
+        month=datetime.now().strftime(month)
+        year=datetime.now().strftime(year)
+
+        today='%s-%s-%s' % (year, month, day)
+
+        if from_ago=='today':
+            date=today
+        elif from_ago=='week':
+            dt = datetime.strptime(today, '%Y-%m-%d')
+            date=dt - timedelta(days=dt.weekday())
+        elif from_ago=='month':
+            date='%s-%s-01' % (year, month)
+            print(date)
+        elif from_ago=='year':
+            date="%s-01-01" % (year)
+
+        statement=self.sql_worked.format(self.table, date)
+        worked=self.sql.request_row(statement)
+
+        # Make another func passing worked list
+        for time in worked:
+            list_sum.append(time[0])
+
+        totalSecs=0
+        for tm in list_sum:
+            timeParts=[int(s) for s in tm.split(':')]
+            totalSecs+=(timeParts[0] * 60 + timeParts[1]) * 60 + timeParts[2]
+        
+        totalSecs, sec = divmod(totalSecs, 60)
+        hr, min = divmod(totalSecs, 60)
+        show_worked='%d:%02d:%02d' % (hr, min, sec)
+        
+        return show_worked
 
     def clocking(self, action):
 

@@ -16,7 +16,8 @@ import argparse
 import sys
 
 from enyora.lib.base import Base
-from enyora.conf.cod_messages import cod_01
+from enyora.conf.cod_messages import cod_01, \
+	cod_02
 
 
 def main():
@@ -33,9 +34,21 @@ def main():
 		action='store',
 		choices=['in',
 			'out'],
-		required=True,
-		dest='action',
+		required=False,
+		dest='param',
 		help=cod_01)
+
+	parser.add_argument(
+		'-s',
+		'--show',
+		action='store',
+		choices=['today',
+			'week',
+			'month',
+			'year'],
+		required=False,
+		dest='param',
+		help=cod_02)
 
 	if len(sys.argv)==1:
 	     parser.print_help(sys.stderr)
@@ -43,7 +56,7 @@ def main():
 
 	args = parser.parse_args()
 	enyora_registry = Base()
-	enyora_registry.run(args.action)
+	enyora_registry.run(args.param)
 
 if __name__ == "__main__":
 	main()

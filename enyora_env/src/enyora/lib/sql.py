@@ -17,7 +17,8 @@ import os.path as path
 
 from datetime import datetime, timedelta
 from enyora.conf.sql_querys import *
-from enyora.conf.cod_messages import 
+from enyora.conf.cod_messages import cod_30, cod_31, \
+	cod_32
 
 class sqlAction(object):
 	"""baseConf class"""

@@ -15,7 +15,8 @@
 import ast
 
 from enyora.conf.settings import baseConf
-from enyora.conf.cod_messages import cod_10
+from enyora.conf.cod_messages import cod_10, \
+	cod_11
 from enyora.lib.actions import registryAction
 
 class Base(object):
@@ -31,14 +32,23 @@ class Base(object):
 		''' Loading Enyora Registry Actions '''
 		self.registry_action=registryAction(self.config)
 
-	def run(self, action):
+	def run(self, param):
 
 		''' Ensure database and table exists '''
 		self.registry_action.check_config()
 
-		if action=='in' or action=='out':
+		# TODO improve select/case
+		if param=='in' or param=='out':
 			''' Insert new record '''
-			json_data=self.registry_action.clocking(action)
+			self.registry_action.clocking(param)
+		elif param=='today' or \
+			param=='week' or \
+			param=='month' or \
+			param=='year':
+			''' Show info: worked hours '''
+			show_worked=self.registry_action.show_worked_hours(param)
+			print(cod_11 % (param, show_worked))
+			exit(0)
 		else:
 			print(cod_10)
 			exit(1)

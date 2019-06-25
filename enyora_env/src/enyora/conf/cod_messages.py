@@ -13,9 +13,11 @@
 
 # enyora.py
 cod_01='Insert \'in\' for clock-in in the office or \'out\' for leave from office.'
+cod_02='Select today, week, month or year to show worked hours.'
 
 # base.py 
 cod_10='[error] - Action not found!'
+cod_11='[info] - Worked hours in a %s: %s'
 
 # actions.py
 cod_20='[error] - Inserted date cannot to be future.'

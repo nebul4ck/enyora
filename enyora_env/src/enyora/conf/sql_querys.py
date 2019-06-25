@@ -22,12 +22,29 @@ SQL_ENYORA_TABLE=""" CREATE TABLE IF NOT EXISTS %s (
                 );"""
 
 SQL_DATE_SELECT=""" SELECT r_date FROM %s \
-    ORDER BY date(r_date),time(r_date) DESC LIMIT 1; """
+    ORDER BY datetime(r_date) DESC LIMIT 1; """
 
 SQL_LAST_ACTION=""" SELECT r_action from %s WHERE r_date='%s'
     ORDER BY date(r_date) DESC LIMIT 1; """
 
 SQL_QUERY_IN=""" INSERT INTO %s 
-				(r_date, r_action, r_worked) 
-				VALUES ('%s','%s','%s')"""
+    (r_date, r_action, r_worked) VALUES ('%s','%s','%s')"""
+
+SQL_WORKED=""" SELECT r_worked from {} WHERE 
+        (r_date BETWEEN strftime('%Y-%m-%d', '{}') AND 
+        datetime('now', 'localtime')) AND 
+        (r_worked IS NOT ''); """
+
+
+#SQL_LAST_DAY_MONTH=""" SELECT date(
+#    'now','start of month','+1 month','-1 day'); """
+#SQL_FIRST_DAY_OF_WEEK=""" SELECT date('now', 'weekday 0', '-6 days'); """
+
+
+# Otra forma con python de sacar el primer dia de la semana
+# day = '2019-06-25'
+# dt = datetime.strptime(day, '%Y-%m-%d')
+# start = dt - timedelta(days=dt.weekday())
+
+
 
