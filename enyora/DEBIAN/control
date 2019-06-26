@@ -1,5 +1,5 @@
 Package: enyora
-License: GPL
+License: GPLv3
 Vendor: nebul4ck
 Essential: no
 Section: main
@@ -9,4 +9,5 @@ Architecture: amd64
 Maintainer: nebul4ck <a.gonzalezmesas@gmail.com>
 #Depends: python-configobj, python-requests, python-configparser
 Homepage: https://github.com/nebul4ck/enyora
-Description: Record the time of entry and exit in the office. Calculate the hours worked daily, weekly and monthly.
+Description: Save the work turn (clock-in and clock-out) into database and show worked hours daily, weekly, monthly and 
+annually from CLI.

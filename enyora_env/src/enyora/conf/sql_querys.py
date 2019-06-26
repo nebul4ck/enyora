@@ -11,7 +11,7 @@
    :Version : 0.0.1
 """
 
-''' SQLITE TIP: SQLite does not have a separate Boolean storage class. Instead, 
+''' SQLITE TIP: SQLite does not have a separate Boolean storage class. Instead,
     Boolean values are stored as integers 0 (false) and 1 (true). '''
 
 SQL_ENYORA_TABLE=""" CREATE TABLE IF NOT EXISTS %s (
@@ -27,12 +27,12 @@ SQL_DATE_SELECT=""" SELECT r_date FROM %s \
 SQL_LAST_ACTION=""" SELECT r_action from %s WHERE r_date='%s'
     ORDER BY date(r_date) DESC LIMIT 1; """
 
-SQL_QUERY_IN=""" INSERT INTO %s 
+SQL_QUERY_IN=""" INSERT INTO %s
     (r_date, r_action, r_worked) VALUES ('%s','%s','%s')"""
 
-SQL_WORKED=""" SELECT r_worked from {} WHERE 
-        (r_date BETWEEN strftime('%Y-%m-%d', '{}') AND 
-        datetime('now', 'localtime')) AND 
+SQL_WORKED=""" SELECT r_worked from {} WHERE
+        (r_date BETWEEN strftime('%Y-%m-%d', '{}') AND
+        datetime('now', 'localtime')) AND
         (r_worked IS NOT ''); """
 
 
