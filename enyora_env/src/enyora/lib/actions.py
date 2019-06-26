@@ -41,7 +41,7 @@ class registryAction(object):
 
     def set_date(self):
         ''' Set current date '''
-        
+
         date = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
 
         return date
@@ -56,7 +56,7 @@ class registryAction(object):
             parse_last_date=datetime.strptime(last_date, date_for)
             parse_curr_date=datetime.strptime(curr_date, date_for)
             worked=parse_curr_date - parse_last_date
-            
+
         return worked
 
     def show_menu(self, last_date, last_action):
@@ -76,7 +76,7 @@ class registryAction(object):
         print(' Latest entry-point recorded:\n')
         print('  | Date: %s' % last_date)
         print('  | Action: clock-%s' % last_action)
-        print('\n The clock-%s action is required for day %s' % 
+        print('\n The clock-%s action is required for day %s' %
             (req_action, last_date))
         new_date=str(input('\n  Date [%s]: ' % opt_date))
         new_action=str(input('  Action [%s]: ' % req_action))
@@ -133,7 +133,7 @@ class registryAction(object):
     def check_action(self, date, action):
         ''' Return if the current action and last action
             are the same '''
-        
+
         statement=self.select_last_action % (self.table, date)
         try:
             last_action=self.sql.request_row(statement)[0][0]
@@ -185,11 +185,11 @@ class registryAction(object):
         for tm in list_sum:
             timeParts=[int(s) for s in tm.split(':')]
             totalSecs+=(timeParts[0] * 60 + timeParts[1]) * 60 + timeParts[2]
-        
+
         totalSecs, sec = divmod(totalSecs, 60)
         hr, min = divmod(totalSecs, 60)
         show_worked='%d:%02d:%02d' % (hr, min, sec)
-        
+
         return show_worked
 
     def clocking(self, action):

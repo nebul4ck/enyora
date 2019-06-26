@@ -1,7 +1,7 @@
 @Library('freeser@master') _
 
 myProjects(
-	build_command: 'buanaclient mpkg',
+	build_command: 'gopack mpkg',
 	third_party: 'no',
 	buildTimeout: 3,
 	language: 'python',

@@ -10,14 +10,6 @@ TO-DO
   enyora --export bar.{xls,xlsx,xlsm,xml}
 ..
 
-2. Show worked hours in a day, a week and a month
-**ie:**
-
-..code:: console
-
-  enyora --show day
-..
-
 4. Multi-tenant
 
 5. Multi-user
@@ -43,7 +35,8 @@ Worked hours, work schedule, holidays, taking a sick leave and more
 13. argsparte does not check if the arg is -a -an -asdddsd --action --atusas, etc.. (only -a or --action is permit)
 
 14. sqlite> SELECT * FROM enyora_registry WHERE r_date LIKE '%2019-06-25%';
-14|2019-06-25 00:16:38|out|2:00:00
+14|2019-06-25 00:16:38|out|2:00:00 
 15|2019-06-25 18:40:59|in|
+Nota: xx:yy:zz -> 00:00:00, from 00:00:00 to go on
 
-15. Hacer que todo termine en base.py e imprimirlo desde ahí
+15. returns are printing from base.py 

@@ -1,7 +1,8 @@
 Enyora Registry
 ###############
 
-Record the time of entry and exit in the office. Calculate the hours worked daily, weekly and monthly.
+Save the work turn (clock-in and clock-out) into database and show worked hours daily, weekly, monthly and 
+annually from CLI.
 
 
 Make package

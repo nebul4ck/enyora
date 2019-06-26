@@ -17,47 +17,47 @@ import sys
 
 from enyora.lib.base import Base
 from enyora.conf.cod_messages import cod_01, \
-	cod_02
+    cod_02
 
 
 def main():
-	''' Main function. '''
+    ''' Main function. '''
 
-	parser = argparse.ArgumentParser(
-		prog='enyora',
-		description='Enyora registry.',
-		add_help=True)
+    parser = argparse.ArgumentParser(
+        prog='enyora',
+        description='Enyora registry.',
+        add_help=True)
 
-	parser.add_argument(
-		'-a',
-		'--action',
-		action='store',
-		choices=['in',
-			'out'],
-		required=False,
-		dest='param',
-		help=cod_01)
+    parser.add_argument(
+        '-a',
+        '--action',
+        action='store',
+        choices=['in',
+            'out'],
+        required=False,
+        dest='param',
+        help=cod_01)
 
-	parser.add_argument(
-		'-s',
-		'--show',
-		action='store',
-		choices=['today',
-			'week',
-			'month',
-			'year'],
-		required=False,
-		dest='param',
-		help=cod_02)
+    parser.add_argument(
+        '-s',
+        '--show',
+        action='store',
+        choices=['today',
+            'week',
+            'month',
+            'year'],
+        required=False,
+        dest='param',
+        help=cod_02)
 
-	if len(sys.argv)==1:
-	     parser.print_help(sys.stderr)
-	     sys.exit(1)
+    if len(sys.argv)==1:
+         parser.print_help(sys.stderr)
+         sys.exit(1)
 
-	args = parser.parse_args()
-	enyora_registry = Base()
-	enyora_registry.run(args.param)
+    args = parser.parse_args()
+    enyora_registry = Base()
+    enyora_registry.run(args.param)
 
 if __name__ == "__main__":
-	main()
+    main()
 
