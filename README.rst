@@ -56,15 +56,16 @@ Use
 
   optional arguments:
     -h, --help            show this help message and exit
-    -a {in,out,day,week,month}, --action {in,out,day,week,month}
-                          in|out to record entry or exit time. unit time to show
-                          about worked hours.
+    -a {in,out}, --action {in,out}   registry clock-in or clock-out at office
+    -s {today,week,month,year}, --show {today,week,month,year} show worked hours per day/week/month/year
+                          
 
     EXAMPLES
     
-      $ enyora -a in (sets the entry time)
-      $ enyora -a out (sets the exit time)
-      $ enyora -a day (show daily worked hours)
-      $ enyora -a week (show weekly worked hours)
-      $ enyora -a month (show montly worked hours)
+      $ enyora -a|--action in
+      $ enyora -a|--action out
+      $ enyora -s|--show today
+      $ enyora -s|--show week
+      $ enyora -s|--show month
+      $ enyora -s|--show year
 ..
