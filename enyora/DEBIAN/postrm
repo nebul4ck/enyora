@@ -1,0 +1,45 @@
+#!/bin/bash
+
+#
+# This script is executed in the post-removal phase
+#
+#   On Debian,
+#       $1=remove    : indicates a removal
+#       $1=purge     : indicates an upgrade
+#
+
+old_database=$(date +%F_%T)
+
+PYTHON_MODULES="/usr/lib/python3.6/dist-packages/enyora"
+#DATABASE="/home/$USER/.enyora-registry.db"
+#NEW_NAME_DATABASE="/home/$USER/.enyora-registry-$old-database.db"
+CONF_DIR="/etc/enyora"
+
+case "$1" in
+
+	remove)
+		#if [ -f "$DATABASE" ]; then
+		#	echo "re-naming old enyora database to $NEW_NAME_DATABASE"
+		#	mv "$DATABASE" "$NEW_NAME_DATABASE" && echo " ...OK"
+		#fi
+	;;
+	purge)
+		if [ -d "$PYTHON_MODULES" ]; then
+			echo "Purge old enyora libs..."
+			rm -rf "$PYTHON_MODULES" && echo " ...OK"
+		fi
+
+		if [ -f "$CONF_DIR" ]; then
+			echo "Purge enyora conf..."
+			rm -rf "$CONF_DIR" && echo " ...OK"
+		fi
+	;;
+		failed-upgrade|abort-install|abort-upgrade|disappear|upgrade|disappear)
+	;;
+	*)
+		echo "postrm called with unknown argument \`$1'" >&2
+		exit 1
+	;;
+esac
+
+exit 0

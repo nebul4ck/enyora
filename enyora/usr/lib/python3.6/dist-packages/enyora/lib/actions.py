@@ -37,7 +37,9 @@ class registryAction(object):
 
     def check_config(self):
         ''' Database orchestration '''
-    self.sql.database_orch()
+        status=self.sql.database_orch()
+
+        print(status)
 
     def set_date(self):
         ''' Set current date '''

@@ -4,7 +4,7 @@ set -u -e -o pipefail
 
 help() {
 	echo "Usage: ./make_package.sh python_version make_mode repository"
-	echo "python_version: [2.7|3.6|3.7] jenkins|local buanaclient"
+	echo "python_version: [2.7|3.6] jenkins|local buanaclient"
 	exit 1
 }
 
@@ -16,7 +16,7 @@ else
 		help
 	else
 		# Check python version
-		if [[ ($1 == "2.7") || ($1 == "3.5") ]]; then
+		if [[ ($1 == "2.7") || ($1 == "3.6") ]]; then
 			PYTHON_VERSION=$1
 			SET_MODE=$2
 			REPO=$3
@@ -35,10 +35,17 @@ else
 	fi
 fi
 
+# Directories
+PYHTON_MODULES="${SATINIZE_REPO}/usr/lib/python${PYTHON_VERSION}/dist-packages/${SATINIZE_REPO}/"
+
+if [ ! -d "$PYHTON_MODULES" ]; then
+	mkdir -p "$PYHTON_MODULES"
+fi
+
 # Sync source code with package folder
 echo "Sync source code with package folder..."
 rsync -av --delete -r --exclude '*pyc' ${BASE}/src/${SATINIZE_REPO}/* \
-	./${SATINIZE_REPO}/usr/lib/python${PYTHON_VERSION}/dist-packages/${SATINIZE_REPO}/
+	./"$PYHTON_MODULES"
 
 # Copy configuration file
 echo "Copy configuration file..."

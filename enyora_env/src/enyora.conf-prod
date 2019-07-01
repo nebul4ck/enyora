@@ -1,3 +1,4 @@
 [database]
-enyora_db = '~/.enyora-registry.db'
+# By default make database into user home directory (ie /home/atreyu/.enyora-registry.db)
+enyora_db = '/home/<your_user>/.enyora-registry.db'
 enyora_table = 'enyora_registry'
