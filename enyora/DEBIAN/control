@@ -3,7 +3,7 @@ License: GPLv3
 Vendor: nebul4ck
 Essential: no
 Section: main
-Version: 0.0.1
+Version: 0.1.1
 Priority: optional
 Architecture: amd64
 Maintainer: nebul4ck <a.gonzalezmesas@gmail.com>
