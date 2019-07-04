@@ -40,3 +40,6 @@ Worked hours, work schedule, holidays, taking a sick leave and more
 Nota: xx:yy:zz -> 00:00:00, from 00:00:00 to go on
 
 15. returns are printing from base.py 
+16. Hacer que me devuelva en formato tabla las horas trabajadas en el día anterior o nº días: 
+	enyora -s -n 1 (ayer)
+	enyora -s -n 2 (antes de ayer y ayer)
